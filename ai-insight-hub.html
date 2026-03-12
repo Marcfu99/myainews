@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>myainews - 个人AI情报站</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00f5ff; --secondary: #7c3aed;
+            --bg-dark: #0a0a0f; --bg-card: rgba(20, 20, 30, 0.8);
+            --text-primary: #ffffff; --text-secondary: #a0a0b0;
+            --border: rgba(0, 245, 255, 0.2);
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(ellipse at 20% 20%, rgba(0, 245, 255, 0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%); }
+        .grid-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; }
+        header { padding: 2rem 5%; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px); background: rgba(10, 10, 15, 0.5); border-bottom: 1px solid var(--border); }
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .logo-text { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--text-primary), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .datetime { font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.9rem; }
+        main { padding: 3rem 5%; max-width: 1400px; margin: 0 auto; }
+        .section { margin-bottom: 4rem; }
+        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+        .section-title { font-size: 1.75rem; font-weight: 600; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 1.5rem; transition: all 0.3s ease; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .product-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .product-logo { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; }
+        .product-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .product-tag { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(0, 245, 255, 0.1);
+            border: 1px solid var(--border); border-radius: 20px; font-size: 0.75rem; color: var(--primary); }
+        .product-desc { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+        .reports-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; }
+        .report-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .report-header { padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); }
+        .report-status { padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem;
+            background: rgba(0, 245, 255, 0.15); color: var(--primary); border: 1px solid var(--border); }
+        .report-content { padding: 1.5rem; }
+        .preview-item { padding: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
+        .preview-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .preview-dot.red { background: #ff4757; }
+        .preview-dot.cyan { background: var(--primary); }
+        .preview-text { flex: 1; }
+        .preview-time { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); }
+        .view-full-btn { margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: transparent;
+            border: 1px solid var(--border); border-radius: 8px; color: var(--primary); cursor: pointer; }
+        footer { text-align: center; padding: 3rem 5%; color: var(--text-secondary); border-top: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div><div class="grid-overlay"></div>
+    <header>
+        <div class="logo">
+            <div class="logo-icon" style="font-family: monospace;">my</div>
+            <div class="logo-text">myainews</div>
+        </div>
+        <div class="datetime" id="datetime">--</div>
+    </header>
+    <main>
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">🚀 AI 产品推荐</h2>
+            </div>
+            <div class="products-grid">
+                <div class="product-card" onclick="window.open('https://pi.inc', '_blank')">
+                    <div class="product-header">
+                        <div class="product-logo"><img src="myainews/logos/pi-inc.svg" alt="Pi.inc"></div>
+                        <div>
+                            <h3>Pi.inc</h3>
+                            <span class="product-tag">AI 演示</span>
+                        </div>
+                    </div>
+                    <p class="product-desc">智能演示文稿生成平台，基于多模态大模型技术。</p>
+                </div>
+                <div class="product-card" onclick="window.open('https://lovart.ai', '_blank')">
+                    <div class="product-header">
+                        <div class="product-logo"><img src="myainews/logos/lovart.svg" alt="Lovart"></div>
+                        <div>
+                            <h3>Lovart</h3>
+                            <span class="product-tag">AI 设计</span>
+                        </div>
+                    </div>
+                    <p class="product-desc">全球首款 AI 创意设计师，一句话生成品牌设计。</p>
+                </div>
+                <div class="product-card" onclick="window.open('https://lovable.dev', '_blank')">
+                    <div class="product-header">
+                        <div class="product-logo"><img src="myainews/logos/lovable.svg" alt="Lovable"></div>
+                        <div>
+                            <h3>Lovable</h3>
+                            <span class="product-tag">AI 编程</span>
+                        </div>
+                    </div>
+                    <p class="product-desc">AI 全栈工程师，自然语言生成应用程序。</p>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="section-header"><h2 class="section-title">📊 每日情报日报</h2></div>
+            <div class="reports-container">
+                <div class="report-card">
+                    <div class="report-header">
+                        <div>📈 A股盘前情报</div>
+                        <span class="report-status">每日 09:05</span>
+                    </div>
+                    <div class="report-content">
+                        <div class="preview-item">
+                            <div class="preview-dot red"></div>
+                            <span class="preview-text">A股盘前情报分析报告</span>
+                            <span class="preview-time" id="stock-date">--</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-card">
+                    <div class="report-header">
+                        <div>🤖 全球AI行业动态</div>
+                        <span class="report-status">每日 09:45</span>
+                    </div>
+                    <div class="report-content">
+                        <div class="preview-item">
+                            <div class="preview-dot cyan"></div>
+                            <span class="preview-text">全球AI行业动态汇总报告</span>
+                            <span class="preview-time" id="ai-date">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer><p>© 2026 myainews</p></footer>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN');
+            const timeStr = now.toLocaleTimeString('zh-CN', {hour12: false});
+            document.getElementById('datetime').textContent = `${dateStr} ${timeStr}`;
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const articleDate = `${month}月${day}日`;
+            document.getElementById('stock-date').textContent = articleDate;
+            document.getElementById('ai-date').textContent = articleDate;
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
